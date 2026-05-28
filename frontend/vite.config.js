@@ -15,7 +15,7 @@ export default defineConfig({
       '/api': {
         target: 'https://docuwisebackend.onrender.com',
         changeOrigin: true,
-        secure: true,
+        
       },
     },
   },
