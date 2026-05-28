@@ -1,0 +1,257 @@
+{
+  "info": {
+    "name": "DocuWise API",
+    "description": "Complete API collection for DocuWise — import into Postman, Thunder Client, or Hoppscotch.\n\nBase URL: http://localhost:5000\n\nWorkflow:\n1. Register or Login → copy the token\n2. Set {{token}} variable in your environment\n3. Upload a document → copy documentId\n4. Run analysis → copy analysisId\n5. Poll for results or ask Q&A questions",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl",    "value": "http://localhost:5000", "type": "string" },
+    { "key": "token",      "value": "",                      "type": "string" },
+    { "key": "documentId", "value": "",                      "type": "string" },
+    { "key": "analysisId", "value": "",                      "type": "string" }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/api/auth/register",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"firstName\": \"Alex\",\n  \"lastName\": \"Johnson\",\n  \"email\": \"alex@example.com\",\n  \"password\": \"password123\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Login",
+          "event": [{
+            "listen": "test",
+            "script": {
+              "exec": [
+                "const res = pm.response.json();",
+                "if (res.data && res.data.token) {",
+                "  pm.collectionVariables.set('token', res.data.token);",
+                "  console.log('Token saved:', res.data.token);",
+                "}"
+              ]
+            }
+          }],
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/api/auth/login",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"alex@example.com\",\n  \"password\": \"password123\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Get Me",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/auth/me",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }]
+          }
+        },
+        {
+          "name": "Update Profile",
+          "request": {
+            "method": "PATCH",
+            "url": "{{baseUrl}}/api/auth/me",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type",  "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"firstName\": \"Alexander\",\n  \"defaultLanguage\": \"en\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Generate API Key",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/api/auth/api-key",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Documents",
+      "item": [
+        {
+          "name": "Upload Document",
+          "event": [{
+            "listen": "test",
+            "script": {
+              "exec": [
+                "const res = pm.response.json();",
+                "if (res.data && res.data.document) {",
+                "  pm.collectionVariables.set('documentId', res.data.document._id);",
+                "  console.log('documentId saved:', res.data.document._id);",
+                "}"
+              ]
+            }
+          }],
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/api/documents/upload",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "description": "Select a .txt, .pdf, or .docx file from your machine"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "List Documents",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/documents?page=1&limit=20",
+              "query": [
+                { "key": "page",  "value": "1" },
+                { "key": "limit", "value": "20" }
+              ]
+            },
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }]
+          }
+        },
+        {
+          "name": "Get Document",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/documents/{{documentId}}",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }]
+          }
+        },
+        {
+          "name": "Delete Document",
+          "request": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/api/documents/{{documentId}}",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Analysis",
+      "item": [
+        {
+          "name": "Run Analysis (all modes)",
+          "event": [{
+            "listen": "test",
+            "script": {
+              "exec": [
+                "const res = pm.response.json();",
+                "if (res.data && res.data.analysisId) {",
+                "  pm.collectionVariables.set('analysisId', res.data.analysisId);",
+                "  console.log('analysisId saved:', res.data.analysisId);",
+                "}"
+              ]
+            }
+          }],
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/api/analysis/run",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type",  "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"documentId\": \"{{documentId}}\",\n  \"mode\": \"all\",\n  \"language\": \"en\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Run Analysis (summarization only)",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/api/analysis/run",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type",  "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"documentId\": \"{{documentId}}\",\n  \"mode\": \"summarization\",\n  \"language\": \"en\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Poll Analysis Result",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/analysis/{{analysisId}}",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }]
+          }
+        },
+        {
+          "name": "List All Analyses",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/analysis?page=1&limit=20",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }]
+          }
+        },
+        {
+          "name": "Ask Question (Q&A)",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/api/analysis/{{analysisId}}/qa",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type",  "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"question\": \"What is the main topic of this document?\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Batch Analysis",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/api/analysis/batch",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type",  "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"documentIds\": [\"{{documentId}}\"],\n  \"mode\": \"summarization\",\n  \"language\": \"en\"\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Health Check",
+      "item": [
+        {
+          "name": "Server Health",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/health"
+          }
+        }
+      ]
+    }
+  ]
+}

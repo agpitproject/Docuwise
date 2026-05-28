@@ -1,0 +1,69 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html { scroll-behavior: smooth; }
+  body {
+    @apply font-sans bg-bg text-ink antialiased;
+    font-size: 15px;
+    line-height: 1.6;
+  }
+  * { box-sizing: border-box; }
+}
+
+@layer components {
+  .card {
+    @apply bg-white border border-black/[0.09] rounded-lg;
+  }
+  .btn-primary {
+    @apply inline-flex items-center gap-2 px-5 py-2.5 bg-ink text-bg text-sm font-medium rounded-lg
+           transition-all hover:opacity-80 hover:-translate-y-px active:scale-95 cursor-pointer;
+  }
+  .btn-accent {
+    @apply inline-flex items-center gap-2 px-5 py-2.5 bg-accent text-white text-sm font-medium rounded-lg
+           transition-all hover:bg-accent-dark hover:-translate-y-px active:scale-95 cursor-pointer;
+  }
+  .btn-outline {
+    @apply inline-flex items-center gap-2 px-5 py-2.5 border border-black/20 text-ink text-sm font-medium
+           rounded-lg bg-transparent transition-all hover:bg-surface2 active:scale-95 cursor-pointer;
+  }
+  .btn-ghost {
+    @apply inline-flex items-center gap-2 px-4 py-2 text-muted text-sm font-medium rounded-lg
+           transition-all hover:bg-surface2 hover:text-ink cursor-pointer border-none bg-transparent;
+  }
+  .input {
+    @apply w-full px-3.5 py-2.5 border border-black/20 rounded-lg text-sm bg-white text-ink
+           outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/10;
+  }
+  .badge {
+    @apply inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-0.5 rounded-full;
+  }
+  .sidebar-item {
+    @apply flex items-center gap-2.5 w-full px-3 py-2.5 text-left text-sm font-medium text-muted
+           rounded-lg transition-all hover:bg-surface2 hover:text-ink border-none bg-transparent cursor-pointer;
+  }
+  .sidebar-item.active {
+    @apply bg-accent-light text-accent;
+  }
+  .section-eyebrow {
+    @apply text-xs font-semibold uppercase tracking-wider text-muted mb-3;
+  }
+  .section-title {
+    @apply font-serif text-4xl tracking-tight mb-4;
+  }
+}
+
+/* Progress bar animation */
+@keyframes progress-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+.progress-pulse { animation: progress-pulse 1.5s ease-in-out infinite; }
+
+/* Fade up animation */
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.fade-up { animation: fade-up 0.25s ease forwards; }
