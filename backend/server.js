@@ -20,6 +20,8 @@ if (process.env.NODE_ENV !== 'test') {
   connectDB();
 }
 
+app.set('trust proxy', 1);
+
 // ─── Security Middleware ──────────────────────────────
 app.use(
   helmet({
