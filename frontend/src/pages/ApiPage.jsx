@@ -47,7 +47,7 @@ export default function ApiPage() {
 
   const maskedKey = apiKey ? `dw_live_${'*'.repeat(32)}` : null;
 
-  const curlExample = `curl -X POST http://localhost:5000/api/analysis/run \\
+  const curlExample = `curl -X POST  https://docuwisebackend.onrender.com/api/analysis/run \\
   -H "Authorization: Bearer YOUR_JWT_TOKEN" \\
   -H "Content-Type: application/json" \\
   -d '{
@@ -56,7 +56,7 @@ export default function ApiPage() {
     "language": "en"
   }'`;
 
-  const uploadExample = `curl -X POST http://localhost:5000/api/documents/upload \\
+  const uploadExample = `curl -X POST https://docuwisebackend.onrender.com/api/documents/upload \\
   -H "Authorization: Bearer YOUR_JWT_TOKEN" \\
   -H "Content-Type: multipart/form-data" \\
   -F "file=@report.pdf"`;
@@ -75,7 +75,7 @@ export default function ApiPage() {
       <h1 className="font-serif text-[38px] mb-2">API & developer tools</h1>
       <p className="text-[15px] text-muted mb-10">
         Use the local REST API with JWT authentication while developer API-key access is still in preview.
-        Local base URL: <code className="bg-surface2 px-2 py-0.5 rounded text-[13px]">http://localhost:5000</code>
+        Local base URL: <code className="bg-surface2 px-2 py-0.5 rounded text-[13px]">https://docuwisebackend.onrender.com</code>
       </p>
 
       {/* API Key */}
@@ -166,7 +166,7 @@ export default function ApiPage() {
           ))}
         </div>
         <p className="text-[12px] text-muted mt-4">
-          Set base URL to <code className="bg-surface2 px-1.5 py-0.5 rounded">http://localhost:5000</code> when running locally.
+          Set base URL to <code className="bg-surface2 px-1.5 py-0.5 rounded">https://docuwisebackend.onrender.com</code> when running locally.
           Add the Authorization header with your JWT token from login to all protected routes.
           API-key authentication is not enabled in this build.
         </p>

@@ -1,11 +1,11 @@
 {
   "info": {
     "name": "DocuWise API",
-    "description": "Complete API collection for DocuWise — import into Postman, Thunder Client, or Hoppscotch.\n\nBase URL: http://localhost:5000\n\nWorkflow:\n1. Register or Login → copy the token\n2. Set {{token}} variable in your environment\n3. Upload a document → copy documentId\n4. Run analysis → copy analysisId\n5. Poll for results or ask Q&A questions",
+    "description": "Complete API collection for DocuWise — import into Postman, Thunder Client, or Hoppscotch.\n\nBase URL:  https://docuwisebackend.onrender.com\n\nWorkflow:\n1. Register or Login → copy the token\n2. Set {{token}} variable in your environment\n3. Upload a document → copy documentId\n4. Run analysis → copy analysisId\n5. Poll for results or ask Q&A questions",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
-    { "key": "baseUrl",    "value": "http://localhost:5000", "type": "string" },
+    { "key": "baseUrl",    "value": " https://docuwisebackend.onrender.com", "type": "string" },
     { "key": "token",      "value": "",                      "type": "string" },
     { "key": "documentId", "value": "",                      "type": "string" },
     { "key": "analysisId", "value": "",                      "type": "string" }

@@ -152,7 +152,7 @@ test('main document analysis browser workflow', async ({ page, request }) => {
 async function cleanupSmokeData(request, token) {
   if (!token) return;
 
-  const docs = await request.get('http://localhost:5000/api/documents', {
+  const docs = await request.get(' https://docuwisebackend.onrender.com/api/documents', {
     headers: { Authorization: `Bearer ${token}` },
   });
 
@@ -164,7 +164,7 @@ async function cleanupSmokeData(request, token) {
 
   await Promise.all(
     smokeDocs.map((document) =>
-      request.delete(`http://localhost:5000/api/documents/${document._id}`, {
+      request.delete(`https://docuwisebackend.onrender.com/api/documents/${document._id}`, {
         headers: { Authorization: `Bearer ${token}` },
       })
     )

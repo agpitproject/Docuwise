@@ -8,7 +8,7 @@ export default defineConfig({
     proxy: {
       // Proxy /api requests to the backend during development
       '/api': {
-        target: 'http://localhost:5000',
+        target: 'https://docuwisebackend.onrender.com',
         changeOrigin: true,
       },
     },
