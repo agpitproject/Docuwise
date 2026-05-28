@@ -4,6 +4,13 @@ import { X } from 'lucide-react';
 import { useAuthStore } from '../../store/authStore';
 import toast from 'react-hot-toast';
 
+let googleInitializedClientId = null;
+let latestGoogleCredentialHandler = null;
+
+const handleGoogleCredentialResponse = (response) => {
+  latestGoogleCredentialHandler?.(response);
+};
+
 export default function AuthModal({ isOpen, onClose, initialMode = 'login' }) {
   const [mode, setMode]             = useState(initialMode);
   const [firstName, setFirstName]   = useState('');
@@ -48,10 +55,16 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }) {
       if (cancelled || !googleButtonRef.current || !window.google?.accounts?.id) return;
 
       googleButtonRef.current.innerHTML = '';
-      window.google.accounts.id.initialize({
-        client_id: googleClientId,
-        callback: handleGoogleCredential,
-      });
+      latestGoogleCredentialHandler = handleGoogleCredential;
+
+      if (googleInitializedClientId !== googleClientId) {
+        window.google.accounts.id.initialize({
+          client_id: googleClientId,
+          callback: handleGoogleCredentialResponse,
+        });
+        googleInitializedClientId = googleClientId;
+      }
+
       window.google.accounts.id.renderButton(googleButtonRef.current, {
         theme: 'outline',
         size: 'large',
@@ -81,6 +94,9 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }) {
 
     return () => {
       cancelled = true;
+      if (latestGoogleCredentialHandler === handleGoogleCredential) {
+        latestGoogleCredentialHandler = null;
+      }
     };
   }, [googleClientId, handleGoogleCredential, isOpen, mode]);
 
