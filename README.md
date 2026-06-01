@@ -102,7 +102,11 @@ npm run dev
 Verify:
 
 ```bash
+<<<<<<< HEAD
+curl https://docuwisebackend.onrender.com/health
+=======
 curl http://localhost:5000/health
+>>>>>>> 40ca2adf759077ac7759244ca7858e32f97310c1
 ```
 
 Expected response includes `"status":"ok"`.
@@ -186,7 +190,7 @@ npm run build
 
 1. Start MongoDB or confirm Atlas access.
 2. Start the backend with `npm run dev`.
-3. Confirm `GET http://localhost:5000/health` returns `ok`.
+3. Confirm `GET https://docuwisebackend.onrender.com/health` returns `ok`.
 4. Start the frontend with `npm run dev`.
 5. Open `http://localhost:5173`.
 6. Register a new user or log in.

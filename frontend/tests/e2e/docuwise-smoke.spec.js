@@ -152,7 +152,7 @@ test('main document analysis browser workflow', async ({ page, request }) => {
 async function cleanupSmokeData(request, token) {
   if (!token) return;
 
-  const docs = await request.get(' https://docuwisebackend.onrender.com/api/documents', {
+  const docs = await request.get('https://docuwisebackend.onrender.com/api/documents', {
     headers: { Authorization: `Bearer ${token}` },
   });
 

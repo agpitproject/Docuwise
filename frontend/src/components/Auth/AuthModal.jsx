@@ -4,13 +4,6 @@ import { X } from 'lucide-react';
 import { useAuthStore } from '../../store/authStore';
 import toast from 'react-hot-toast';
 
-let googleInitializedClientId = null;
-let latestGoogleCredentialHandler = null;
-
-const handleGoogleCredentialResponse = (response) => {
-  latestGoogleCredentialHandler?.(response);
-};
-
 export default function AuthModal({ isOpen, onClose, initialMode = 'login' }) {
   const [mode, setMode]             = useState(initialMode);
   const [firstName, setFirstName]   = useState('');

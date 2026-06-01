@@ -47,7 +47,7 @@ export default function ApiPage() {
 
   const maskedKey = apiKey ? `dw_live_${'*'.repeat(32)}` : null;
 
-  const curlExample = `curl -X POST  https://docuwisebackend.onrender.com/api/analysis/run \\
+  const curlExample = `curl -X POST https://docuwisebackend.onrender.com/api/analysis/run \\
   -H "Authorization: Bearer YOUR_JWT_TOKEN" \\
   -H "Content-Type: application/json" \\
   -d '{
@@ -75,7 +75,7 @@ export default function ApiPage() {
       <h1 className="font-serif text-[38px] mb-2">API & developer tools</h1>
       <p className="text-[15px] text-muted mb-10">
         Use the local REST API with JWT authentication while developer API-key access is still in preview.
-        Local base URL: <code className="bg-surface2 px-2 py-0.5 rounded text-[13px]">https://docuwisebackend.onrender.com</code>
+        Remote base URL: <code className="bg-surface2 px-2 py-0.5 rounded text-[13px]">https://docuwisebackend.onrender.com</code>
       </p>
 
       {/* API Key */}

@@ -94,7 +94,7 @@ npm run dev
 Verify the health endpoint:
 
 ```bash
-curl http://localhost:5000/health
+curl https://docuwisebackend.onrender.com/health
 ```
 
 Expected result:
@@ -135,7 +135,7 @@ For local development, the Vite proxy can route `/api` to `http://localhost:5000
 For production frontend builds, set `VITE_API_URL` to the deployed backend API base URL:
 
 ```env
-VITE_API_URL=https://your-backend-domain.example.com/api
+VITE_API_URL=https://docuwisebackend.onrender.com/api
 ```
 
 Only set `VITE_GOOGLE_CLIENT_ID` if Google sign-in is configured.

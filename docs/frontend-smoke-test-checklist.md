@@ -8,7 +8,7 @@ Use this checklist for a manual browser smoke pass after backend and frontend ch
   - `cd backend`
   - `npm run dev`
 - Verify backend health:
-  - Open `http://localhost:5000/health`
+  - Open `https://docuwisebackend.onrender.com/health`
   - Confirm the response reports `status: ok`
 - Start the frontend:
   - `cd frontend`
