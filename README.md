@@ -102,7 +102,11 @@ npm run dev
 Verify:
 
 ```bash
+<<<<<<< HEAD
 curl https://docuwisebackend.onrender.com/health
+=======
+curl http://localhost:5000/health
+>>>>>>> 40ca2adf759077ac7759244ca7858e32f97310c1
 ```
 
 Expected response includes `"status":"ok"`.
