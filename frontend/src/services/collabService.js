@@ -1,4 +1,4 @@
-import api from './api';
+import api, { API_ROOT } from './api';
 
 export const collabService = {
   events: (documentId, params) => api.get(`/collab/${documentId}/events`, { params }),
@@ -17,7 +17,7 @@ export const collabService = {
     }
 
     const qs = token ? `?token=${encodeURIComponent(token)}` : '';
-    return new EventSource(`/api/collab/${documentId}/stream${qs}`);
+    return new EventSource(`${API_ROOT}/collab/${documentId}/stream${qs}`);
   },
 };
 
