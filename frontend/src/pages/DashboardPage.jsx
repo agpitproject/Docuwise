@@ -307,8 +307,6 @@ export default function DashboardPage() {
 
     try {
       const res = await documentService.updateCollaborators(selectedDocId, validPartners);
-      await fetchDocuments();
-      await loadCollaboration(true);
       const email = res.data.data.email || {};
       const failedEmails = email.failed || [];
       const skippedEmails = email.skipped || [];
@@ -321,8 +319,12 @@ export default function DashboardPage() {
       } else {
         toast.success('Collaborators saved.');
       }
+
+      fetchDocuments().catch(() => {});
+      loadCollaboration(true).catch(() => {});
     } catch (error) {
-      toast.error(error.response?.data?.message || 'Could not save collaborators.');
+      const detail = error.response?.data?.message || error.message;
+      toast.error(detail || 'Could not save collaborators.');
     }
   };
 

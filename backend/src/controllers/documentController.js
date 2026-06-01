@@ -182,13 +182,19 @@ const updateCollaborators = asyncHandler(async (req, res) => {
   });
   await doc.save();
 
-  const inviteResults = await Promise.allSettled(
-    inviteCollaborators.map((partner) => sendCollaboratorInvite({
-      collaborator: partner,
-      document: doc,
-      inviter: req.user,
-    }))
-  );
+  let inviteResults = [];
+  try {
+    inviteResults = await Promise.allSettled(
+      inviteCollaborators.map((partner) => sendCollaboratorInvite({
+        collaborator: partner,
+        document: doc,
+        inviter: req.user,
+      }))
+    );
+  } catch (error) {
+    console.error('Collaborator invite email batch failed:', error.message || error);
+    inviteResults = inviteCollaborators.map(() => ({ status: 'rejected', reason: error }));
+  }
 
   inviteResults
     .filter((result) => result.status === 'rejected')
