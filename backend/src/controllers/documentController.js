@@ -102,18 +102,16 @@ const updateCollaborators = asyncHandler(async (req, res) => {
     return sendError(res, 400, 'You can add up to 3 collaborators per document.');
   }
 
-  const sanitized = collaborators
+  const submittedCollaborators = collaborators
     .map((partner) => ({
       name: String(partner?.name || '').trim() || String(partner?.email || '').split('@')[0] || 'Collaborator',
       email: String(partner?.email || '').trim().toLowerCase(),
       role: normalizeRole(partner?.role),
-      status: 'invited',
-      invitedAt: new Date(),
     }))
     .filter((partner) => partner.email);
 
-  const uniqueEmails = new Set(sanitized.map((partner) => partner.email));
-  if (uniqueEmails.size !== sanitized.length) {
+  const uniqueEmails = new Set(submittedCollaborators.map((partner) => partner.email));
+  if (uniqueEmails.size !== submittedCollaborators.length) {
     return sendError(res, 400, 'Collaborator emails must be unique.');
   }
 
@@ -126,8 +124,16 @@ const updateCollaborators = asyncHandler(async (req, res) => {
     previousCollaborators.map((partner) => [String(partner.email || '').toLowerCase(), partner])
   );
   const nextByEmail = new Map(
-    sanitized.map((partner) => [String(partner.email || '').toLowerCase(), partner])
+    submittedCollaborators.map((partner) => [String(partner.email || '').toLowerCase(), partner])
   );
+  const sanitized = submittedCollaborators.map((partner) => {
+    const previous = previousByEmail.get(partner.email);
+    return {
+      ...partner,
+      status: previous?.status || 'invited',
+      invitedAt: previous?.invitedAt || new Date(),
+    };
+  });
 
   const logs = [];
   nextByEmail.forEach((partner, email) => {
@@ -164,8 +170,11 @@ const updateCollaborators = asyncHandler(async (req, res) => {
 
   if (logs.length > 0) await Promise.allSettled(logs);
 
-  const existingEmails = new Set(doc.collaborators.map((partner) => partner.email));
-  const newCollaborators = sanitized.filter((partner) => !existingEmails.has(partner.email));
+  const inviteCollaborators = sanitized.filter((partner) => {
+    const previous = previousByEmail.get(partner.email);
+    return !previous || previous.status === 'invited';
+  });
+  const newCollaborators = sanitized.filter((partner) => !previousByEmail.has(partner.email));
 
   doc.collaborators = sanitized;
   newCollaborators.forEach((partner) => {
@@ -174,7 +183,7 @@ const updateCollaborators = asyncHandler(async (req, res) => {
   await doc.save();
 
   const inviteResults = await Promise.allSettled(
-    newCollaborators.map((partner) => sendCollaboratorInvite({
+    inviteCollaborators.map((partner) => sendCollaboratorInvite({
       collaborator: partner,
       document: doc,
       inviter: req.user,
@@ -190,13 +199,22 @@ const updateCollaborators = asyncHandler(async (req, res) => {
   doc = await Document.findById(doc._id).select('-filePath');
 
   const failedEmails = inviteResults
-    .map((result, index) => (result.status === 'rejected' ? newCollaborators[index].email : null))
+    .map((result, index) => (result.status === 'rejected' ? inviteCollaborators[index].email : null))
     .filter(Boolean);
   const skippedEmails = inviteResults
-    .map((result, index) => (result.status === 'fulfilled' && result.value?.skipped ? newCollaborators[index].email : null))
+    .map((result, index) => (result.status === 'fulfilled' && result.value?.skipped ? inviteCollaborators[index].email : null))
     .filter(Boolean);
   const sentEmails = inviteResults
-    .map((result, index) => (result.status === 'fulfilled' && result.value?.sent ? newCollaborators[index].email : null))
+    .map((result, index) => (result.status === 'fulfilled' && result.value?.sent ? inviteCollaborators[index].email : null))
+    .filter(Boolean);
+  const errors = inviteResults
+    .map((result, index) => (result.status === 'rejected'
+      ? {
+          email: inviteCollaborators[index].email,
+          message: result.reason?.message || 'Invite email failed',
+          code: result.reason?.code || result.reason?.responseCode || null,
+        }
+      : null))
     .filter(Boolean);
   const emailIssueCount = failedEmails.length + skippedEmails.length;
   const message = emailIssueCount
@@ -206,10 +224,12 @@ const updateCollaborators = asyncHandler(async (req, res) => {
   sendSuccess(res, 200, message, {
     document: doc,
     email: {
-      invited: newCollaborators.length,
+      invited: inviteCollaborators.length,
+      added: newCollaborators.length,
       sent: sentEmails,
       skipped: skippedEmails,
       failed: failedEmails,
+      errors,
     },
   });
 });

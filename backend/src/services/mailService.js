@@ -2,12 +2,16 @@ const nodemailer = require('nodemailer');
 
 let cachedTransporter = null;
 
+function envValue(name) {
+  return String(process.env[name] || '').trim();
+}
+
 function isMailConfigured() {
   return Boolean(
-    process.env.SMTP_HOST &&
-    process.env.SMTP_PORT &&
-    process.env.SMTP_USER &&
-    process.env.SMTP_PASS
+    envValue('SMTP_HOST') &&
+    envValue('SMTP_PORT') &&
+    envValue('SMTP_USER') &&
+    envValue('SMTP_PASS')
   );
 }
 
@@ -16,12 +20,12 @@ function getTransporter() {
   if (cachedTransporter) return cachedTransporter;
 
   cachedTransporter = nodemailer.createTransport({
-    host: process.env.SMTP_HOST,
-    port: Number(process.env.SMTP_PORT),
-    secure: String(process.env.SMTP_SECURE || '').toLowerCase() === 'true',
+    host: envValue('SMTP_HOST'),
+    port: Number(envValue('SMTP_PORT')),
+    secure: envValue('SMTP_SECURE').toLowerCase() === 'true',
     auth: {
-      user: process.env.SMTP_USER,
-      pass: process.env.SMTP_PASS,
+      user: envValue('SMTP_USER'),
+      pass: envValue('SMTP_PASS'),
     },
   });
 
@@ -32,15 +36,15 @@ async function sendCollaboratorInvite({ collaborator, document, inviter }) {
   const transporter = getTransporter();
   if (!transporter) {
     console.warn(`Email invite skipped for ${collaborator.email}: SMTP is not configured.`);
-    return { skipped: true };
+    return { skipped: true, reason: 'SMTP is not configured' };
   }
 
-  const appUrl = (process.env.FRONTEND_URL || 'http://localhost:5173').replace(/\/$/, '');
+  const appUrl = (envValue('FRONTEND_URL') || 'http://localhost:5173').replace(/\/$/, '');
   const inviteUrl = `${appUrl}/dashboard?document=${document._id}`;
   const inviterName = [inviter.firstName, inviter.lastName].filter(Boolean).join(' ') || inviter.email || 'A DocuWise user';
-  const from = process.env.MAIL_FROM || process.env.SMTP_USER;
+  const from = envValue('MAIL_FROM') || envValue('SMTP_USER');
 
-  await transporter.sendMail({
+  const info = await transporter.sendMail({
     from,
     to: collaborator.email,
     subject: `${inviterName} invited you to collaborate on ${document.originalName}`,
@@ -60,7 +64,12 @@ async function sendCollaboratorInvite({ collaborator, document, inviter }) {
     `,
   });
 
-  return { sent: true };
+  return {
+    sent: true,
+    messageId: info.messageId,
+    accepted: info.accepted || [],
+    rejected: info.rejected || [],
+  };
 }
 
 function escapeHtml(value) {

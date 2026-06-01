@@ -314,9 +314,12 @@ export default function DashboardPage() {
       const skippedEmails = email.skipped || [];
       if (failedEmails.length || skippedEmails.length) {
         const notSentEmails = [...failedEmails, ...skippedEmails];
-        toast.error(`Saved, but invite email was not sent to ${notSentEmails.join(', ')}.`);
+        const firstError = email.errors?.[0]?.message;
+        toast.error(`Saved, but invite email was not sent to ${notSentEmails.join(', ')}.${firstError ? ` ${firstError}` : ''}`);
+      } else if (email.invited > 0) {
+        toast.success('Invites sent.');
       } else {
-        toast.success('Invites saved.');
+        toast.success('Collaborators saved.');
       }
     } catch (error) {
       toast.error(error.response?.data?.message || 'Could not save collaborators.');
