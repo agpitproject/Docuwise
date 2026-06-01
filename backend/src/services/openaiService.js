@@ -18,9 +18,12 @@ const openai = hasOpenAIKey ? new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
 const truncate = (text, maxChars = 12000) =>
   text.length > maxChars ? `${text.slice(0, maxChars)}\n[...truncated]` : text;
 
-const summariseDocument = async (text, language = 'en', sourceLanguage = 'auto') => {
+const summariseDocument = async (text, language = 'en', sourceLanguage = 'auto', context = {}) => {
+  const cleanedText = cleanDocumentText(text);
+  if (!cleanedText) return emptySummary(context);
+
   const targetLanguage = normalizeLanguage(language, detectDocumentLanguage(text));
-  if (!openai) return fallbackSummary(text);
+  if (!openai) return fallbackSummary(cleanedText, context);
 
   try {
     console.log('Using OpenAI explanation path');
@@ -33,7 +36,7 @@ const summariseDocument = async (text, language = 'en', sourceLanguage = 'auto')
           content: `You are a document teacher. Use only the uploaded document text. Do not invent facts, names, dates, obligations, risks, or conclusions that are not supported by the document. Explain like a human teacher: interpret meaning, explain practical impact, and avoid copying document sentences. Keep evidence separate from the explanation because the app may display snippets separately.
 If the document is technical or academic, explain the concept, mechanism, limitations, and evaluation points. If it is legal or policy, explain duties, deadlines, exceptions, approval conditions, proof/documents, risks, and obligations. If it is business/project content, explain results, risks, decisions, action points, and business impact.
 Use the file context to keep the explanation specific to this document and avoid generic boilerplate. ${summaryContext}
-Respond in language code: ${language}, defaulting to English when the document language is unclear. Return only this exact plain-text format:
+Respond in language code: ${targetLanguage}, defaulting to English when the document language is unclear. Return only this exact plain-text format:
 
 Document Explanation
 
@@ -3200,6 +3203,19 @@ function isAcceptableTranslation(output, sourceText, language) {
 
 function normalizeWhitespace(value) {
   return String(value || '').replace(/\s+/g, ' ').trim();
+}
+
+function normalizeLanguage(language, fallbackLanguage = 'en') {
+  const supportedLanguages = new Set(['ar', 'de', 'en', 'es', 'fr', 'hi', 'it', 'ja', 'ko', 'pt', 'ru', 'zh']);
+  const cleanedLanguage = String(language || '').trim().toLowerCase();
+  const cleanedFallback = String(fallbackLanguage || '').trim().toLowerCase();
+
+  if (supportedLanguages.has(cleanedLanguage)) return cleanedLanguage;
+  if (cleanedLanguage === 'auto' || cleanedLanguage === 'unknown' || !cleanedLanguage) {
+    return supportedLanguages.has(cleanedFallback) ? cleanedFallback : 'en';
+  }
+
+  return supportedLanguages.has(cleanedFallback) ? cleanedFallback : 'en';
 }
 
 function resolveLanguageName(language) {

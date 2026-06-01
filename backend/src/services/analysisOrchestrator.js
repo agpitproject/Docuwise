@@ -32,7 +32,7 @@ const run = async (analysisId, text, mode, language, context = {}) => {
 
     if (mode === 'summarization' || mode === 'all') {
       tasks.push(
-        summariseDocument(text, outputLanguage, sourceLanguage).then(summary => { updates.summary = summary; })
+        summariseDocument(text, outputLanguage, sourceLanguage, context).then(summary => { updates.summary = summary; })
       );
     }
 
