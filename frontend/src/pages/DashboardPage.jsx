@@ -309,9 +309,12 @@ export default function DashboardPage() {
       const res = await documentService.updateCollaborators(selectedDocId, validPartners);
       await fetchDocuments();
       await loadCollaboration(true);
-      const failedEmails = res.data.data.email?.failed || [];
-      if (failedEmails.length) {
-        toast.error(`Saved, but email failed for ${failedEmails.join(', ')}.`);
+      const email = res.data.data.email || {};
+      const failedEmails = email.failed || [];
+      const skippedEmails = email.skipped || [];
+      if (failedEmails.length || skippedEmails.length) {
+        const notSentEmails = [...failedEmails, ...skippedEmails];
+        toast.error(`Saved, but invite email was not sent to ${notSentEmails.join(', ')}.`);
       } else {
         toast.success('Invites saved.');
       }

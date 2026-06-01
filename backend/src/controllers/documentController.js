@@ -192,11 +192,23 @@ const updateCollaborators = asyncHandler(async (req, res) => {
   const failedEmails = inviteResults
     .map((result, index) => (result.status === 'rejected' ? newCollaborators[index].email : null))
     .filter(Boolean);
+  const skippedEmails = inviteResults
+    .map((result, index) => (result.status === 'fulfilled' && result.value?.skipped ? newCollaborators[index].email : null))
+    .filter(Boolean);
+  const sentEmails = inviteResults
+    .map((result, index) => (result.status === 'fulfilled' && result.value?.sent ? newCollaborators[index].email : null))
+    .filter(Boolean);
+  const emailIssueCount = failedEmails.length + skippedEmails.length;
+  const message = emailIssueCount
+    ? 'Collaborators updated, but some invite emails were not sent.'
+    : 'Collaborators updated';
 
-  sendSuccess(res, 200, failedEmails.length ? 'Collaborators updated, but some invite emails failed.' : 'Collaborators updated', {
+  sendSuccess(res, 200, message, {
     document: doc,
     email: {
       invited: newCollaborators.length,
+      sent: sentEmails,
+      skipped: skippedEmails,
       failed: failedEmails,
     },
   });
