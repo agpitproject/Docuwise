@@ -1,0 +1,14 @@
+node_modules/
+dist/
+build/
+coverage/
+.nyc_output/
+uploads/
+backend/uploads/
+
+.env
+.env.local
+.env.*.local
+backend/.env
+.env.example
+frontend/.env
