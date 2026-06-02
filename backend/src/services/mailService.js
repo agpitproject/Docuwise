@@ -6,6 +6,11 @@ function envValue(name) {
   return String(process.env[name] || '').trim();
 }
 
+function envNumber(name, fallback) {
+  const value = Number(envValue(name));
+  return Number.isFinite(value) && value > 0 ? value : fallback;
+}
+
 function isMailConfigured() {
   return Boolean(
     envValue('SMTP_HOST') &&
@@ -27,6 +32,9 @@ function getTransporter() {
       user: envValue('SMTP_USER'),
       pass: envValue('SMTP_PASS'),
     },
+    connectionTimeout: envNumber('SMTP_CONNECTION_TIMEOUT_MS', 5000),
+    greetingTimeout: envNumber('SMTP_GREETING_TIMEOUT_MS', 5000),
+    socketTimeout: envNumber('SMTP_SOCKET_TIMEOUT_MS', 10000),
   });
 
   return cachedTransporter;

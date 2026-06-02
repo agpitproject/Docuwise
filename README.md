@@ -89,6 +89,9 @@ JWT_EXPIRES_IN=7d
 OPENAI_API_KEY=sk-your-key
 HUGGINGFACE_API_TOKEN=hf-your-token
 FRONTEND_URL=http://localhost:5173
+SMTP_CONNECTION_TIMEOUT_MS=5000
+SMTP_GREETING_TIMEOUT_MS=5000
+SMTP_SOCKET_TIMEOUT_MS=10000
 UPLOAD_DIR=uploads
 MAX_FILE_SIZE_MB=50
 ```
@@ -148,6 +151,9 @@ Open `http://localhost:5173`.
 | `OPENAI_API_KEY` | Optional | Enables higher-quality AI output when quota/network allow it. |
 | `HUGGINGFACE_API_TOKEN` | Optional | Enables HuggingFace-backed categorization/entity support. |
 | `FRONTEND_URL` | Yes | Used for CORS, for example `http://localhost:5173`. |
+| `SMTP_CONNECTION_TIMEOUT_MS` | No | Max time to establish an SMTP connection. Defaults to `5000`. |
+| `SMTP_GREETING_TIMEOUT_MS` | No | Max time to wait for the SMTP greeting. Defaults to `5000`. |
+| `SMTP_SOCKET_TIMEOUT_MS` | No | Max idle SMTP socket time. Defaults to `10000`. |
 | `UPLOAD_DIR` | No | Local upload directory. |
 | `MAX_FILE_SIZE_MB` | No | Upload limit. |
 
