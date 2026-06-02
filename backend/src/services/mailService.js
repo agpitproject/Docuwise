@@ -25,17 +25,25 @@ function getTransporter() {
   if (cachedTransporter) return cachedTransporter;
 
   cachedTransporter = nodemailer.createTransport({
-    host: envValue('SMTP_HOST'),
-    port: Number(envValue('SMTP_PORT')),
-    secure: envValue('SMTP_SECURE').toLowerCase() === 'true',
-    auth: {
-      user: envValue('SMTP_USER'),
-      pass: envValue('SMTP_PASS'),
-    },
-    connectionTimeout: envNumber('SMTP_CONNECTION_TIMEOUT_MS', 15000),
-    greetingTimeout: envNumber('SMTP_GREETING_TIMEOUT_MS', 15000),
-    socketTimeout: envNumber('SMTP_SOCKET_TIMEOUT_MS', 20000),
-  });
+  host: envValue('SMTP_HOST'),
+  port: Number(envValue('SMTP_PORT')),
+  secure: envValue('SMTP_SECURE').toLowerCase() === 'true',
+
+  auth: {
+    user: envValue('SMTP_USER'),
+    pass: envValue('SMTP_PASS'),
+  },
+
+  tls: {
+    rejectUnauthorized: false,
+  },
+
+  family: 4,
+
+  connectionTimeout: envNumber('SMTP_CONNECTION_TIMEOUT_MS', 15000),
+  greetingTimeout: envNumber('SMTP_GREETING_TIMEOUT_MS', 15000),
+  socketTimeout: envNumber('SMTP_SOCKET_TIMEOUT_MS', 20000),
+});
 
   return cachedTransporter;
 }
