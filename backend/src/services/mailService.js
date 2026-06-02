@@ -32,9 +32,9 @@ function getTransporter() {
       user: envValue('SMTP_USER'),
       pass: envValue('SMTP_PASS'),
     },
-    connectionTimeout: envNumber('SMTP_CONNECTION_TIMEOUT_MS', 5000),
-    greetingTimeout: envNumber('SMTP_GREETING_TIMEOUT_MS', 5000),
-    socketTimeout: envNumber('SMTP_SOCKET_TIMEOUT_MS', 10000),
+    connectionTimeout: envNumber('SMTP_CONNECTION_TIMEOUT_MS', 15000),
+    greetingTimeout: envNumber('SMTP_GREETING_TIMEOUT_MS', 15000),
+    socketTimeout: envNumber('SMTP_SOCKET_TIMEOUT_MS', 20000),
   });
 
   return cachedTransporter;
@@ -51,6 +51,9 @@ async function sendCollaboratorInvite({ collaborator, document, inviter }) {
   const inviteUrl = `${appUrl}/dashboard?document=${document._id}`;
   const inviterName = [inviter.firstName, inviter.lastName].filter(Boolean).join(' ') || inviter.email || 'A DocuWise user';
   const from = envValue('MAIL_FROM') || envValue('SMTP_USER');
+
+  await transporter.verify();
+  console.log("SMTP verified");
 
   const info = await transporter.sendMail({
     from,
