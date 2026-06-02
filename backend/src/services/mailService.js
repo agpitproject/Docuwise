@@ -24,25 +24,23 @@ function getTransporter() {
   if (!isMailConfigured()) return null;
   if (cachedTransporter) return cachedTransporter;
 
-  cachedTransporter = nodemailer.createTransport({
-  host: envValue('SMTP_HOST'),
-  port: Number(envValue('SMTP_PORT')),
-  secure: envValue('SMTP_SECURE').toLowerCase() === 'true',
+ cachedTransporter = nodemailer.createTransport({
+  service: 'gmail',
 
   auth: {
     user: envValue('SMTP_USER'),
     pass: envValue('SMTP_PASS'),
   },
 
+  family: 4,
+
   tls: {
     rejectUnauthorized: false,
   },
 
-  family: 4,
-
-  connectionTimeout: envNumber('SMTP_CONNECTION_TIMEOUT_MS', 15000),
-  greetingTimeout: envNumber('SMTP_GREETING_TIMEOUT_MS', 15000),
-  socketTimeout: envNumber('SMTP_SOCKET_TIMEOUT_MS', 20000),
+  connectionTimeout: 30000,
+  greetingTimeout: 30000,
+  socketTimeout: 30000,
 });
 
   return cachedTransporter;
