@@ -13,8 +13,6 @@ function envNumber(name, fallback) {
 
 function isMailConfigured() {
   return Boolean(
-    envValue('SMTP_HOST') &&
-    envValue('SMTP_PORT') &&
     envValue('SMTP_USER') &&
     envValue('SMTP_PASS')
   );
